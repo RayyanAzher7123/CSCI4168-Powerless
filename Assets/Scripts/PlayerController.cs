@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float crouchSpeed;
     [SerializeField] private float sprintSpeed;
     [SerializeField] private float sensitivity;
+    [SerializeField] private float reachDistance;
 
     private PlayerCharacter playerCharacter;
     private Light flashlight_l;
@@ -84,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
     private void applyInteract()
     {
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit))
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, reachDistance))
         {
             if (hit.transform.gameObject.CompareTag("Key"))
             {

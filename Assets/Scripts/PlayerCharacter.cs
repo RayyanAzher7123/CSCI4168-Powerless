@@ -14,8 +14,6 @@ public class PlayerCharacter : MonoBehaviour
 
     void Start()
     {
-        Debug.Log(this);
-        
         batteryIndex = 0;
         batteries = new  List<Battery>();
     }
