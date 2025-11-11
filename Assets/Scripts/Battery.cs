@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Battery
 {
-    private int batteryLife = 1000;
+    private int batteryLife = 10000;
     private bool isOn;
 
     public int getBatteryLife()

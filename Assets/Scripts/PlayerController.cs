@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private GameObject player;
-    [SerializeField] private GameObject camera;
+    [SerializeField] private GameObject camera_go;
     [SerializeField] private GameObject flashlight;
     [SerializeField] private InputActionReference move_ia;
     [SerializeField] private InputActionReference look_ia;
@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
         rotate_v.y = Mathf.Clamp(rotate_v.y, -70f, 70f);
         
         player.transform.localRotation = Quaternion.Slerp(player.transform.localRotation, Quaternion.Euler(0, rotate_v.x, 0), 0.2f);
-        camera.transform.localRotation = Quaternion.Slerp(camera_c.transform.localRotation, Quaternion.Euler(rotate_v.y, 0, 0), 0.2f);
+        camera_go.transform.localRotation = Quaternion.Slerp(camera_c.transform.localRotation, Quaternion.Euler(rotate_v.y, 0, 0), 0.2f);
     }
 
     private void applyInteract()
@@ -182,5 +182,14 @@ public class PlayerController : MonoBehaviour
     private bool getSprint()
     {
         return sprint_ia.action.IsPressed();
+    }
+
+    public bool flashlightOn()
+    {
+        if (getAttack() && playerCharacter.getBattery() != null && playerCharacter.getBattery().getBatteryLife() > 0)
+        {
+            return true;
+        }
+        return false;
     }
 }
