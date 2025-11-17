@@ -1,2 +1,21 @@
 fileFormatVersion: 2
 guid: 01338cc51d4126e4bb9427e4d6e6beb1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - player: {fileID: 796274897997656793, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+  - camera: {instanceID: 0}
+  - flashlight: {instanceID: 0}
+  - move_ia: {instanceID: 0}
+  - look_ia: {instanceID: 0}
+  - interact_ia: {instanceID: 0}
+  - attack_ia: {instanceID: 0}
+  - reload_ia: {instanceID: 0}
+  - crouch_ia: {instanceID: 0}
+  - sprint_ia: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
