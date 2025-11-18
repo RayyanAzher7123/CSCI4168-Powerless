@@ -1,0 +1,34 @@
+# Blender 3.6.0 MTL File: 'for-sketchfab.blend'
+# www.blender.org
+
+newmtl glass_1k
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl liquid_1k
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152316 0.000769 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl modern_stuff_2k
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns DefaultMaterial_roughness.jpg
+map_refl DefaultMaterial_metallic.jpg
+map_Ke DefaultMaterial_emissive.jpg
+map_Bump -bm 1.000000 DefaultMaterial_normal.png
