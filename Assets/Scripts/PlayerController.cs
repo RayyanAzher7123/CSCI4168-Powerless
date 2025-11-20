@@ -6,6 +6,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject camera;
     [SerializeField] private GameObject flashlight;
+
+    // 🔊 SOUND EFFECTS
+    [SerializeField] private AudioClip keyPickupSound;
+    [SerializeField] private AudioClip batteryPickupSound;
+    [SerializeField] private AudioClip doorOpenSound;
+    [SerializeField] private AudioClip flashlightClickSound;
+    [SerializeField] private AudioClip reloadSound;
+    [SerializeField] private AudioClip footstepSound;
+
+    private AudioSource audioSource;
+
     [SerializeField] private InputActionReference move_ia;
     [SerializeField] private InputActionReference look_ia;
     [SerializeField] private InputActionReference interact_ia;
@@ -13,8 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference reload_ia;
     [SerializeField] private InputActionReference crouch_ia;
     [SerializeField] private InputActionReference sprint_ia;
-    
-    
+
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
     [SerializeField] private float sprintSpeed;
@@ -28,13 +38,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetRotate_v;
     private Rigidbody player_rb;
     private Camera camera_c;
-    
+
     void Start()
     {
         playerCharacter = GetComponent<PlayerCharacter>();
         flashlight_l = flashlight.GetComponent<Light>();
         player_rb = player.GetComponent<Rigidbody>();
         camera_c = player.GetComponentInChildren<Camera>();
+
+        audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -53,7 +65,7 @@ public class PlayerController : MonoBehaviour
         {
             player.transform.localScale = new Vector3(1f, 0.5f, 1f);
             applyMovement(crouchSpeed);
-        } 
+        }
         else if (getSprint())
         {
             player.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -64,13 +76,20 @@ public class PlayerController : MonoBehaviour
             player.transform.localScale = new Vector3(1f, 1f, 1f);
             applyMovement(walkSpeed);
         }
-        
+
         applyRotation();
     }
 
     private void applyMovement(float speed)
     {
         player_rb.AddForce(move_v * speed);
+
+        // 🔊 FOOTSTEPS
+        if (move_v.magnitude > 0.1f && player_rb.linearVelocity.magnitude > 0.1f)
+        {
+            if (!audioSource.isPlaying)
+                audioSource.PlayOneShot(footstepSound, 0.4f);
+        }
     }
 
     private void applyRotation()
@@ -78,9 +97,18 @@ public class PlayerController : MonoBehaviour
         rotate_v.x += targetRotate_v.x * sensitivity;
         rotate_v.y -= targetRotate_v.y * sensitivity;
         rotate_v.y = Mathf.Clamp(rotate_v.y, -70f, 70f);
-        
-        player.transform.localRotation = Quaternion.Slerp(player.transform.localRotation, Quaternion.Euler(0, rotate_v.x, 0), 0.2f);
-        camera.transform.localRotation = Quaternion.Slerp(camera_c.transform.localRotation, Quaternion.Euler(rotate_v.y, 0, 0), 0.2f);
+
+        player.transform.localRotation = Quaternion.Slerp(
+            player.transform.localRotation,
+            Quaternion.Euler(0, rotate_v.x, 0),
+            0.2f
+        );
+
+        camera.transform.localRotation = Quaternion.Slerp(
+            camera_c.transform.localRotation,
+            Quaternion.Euler(rotate_v.y, 0, 0),
+            0.2f
+        );
     }
 
     private void applyInteract()
@@ -89,12 +117,14 @@ public class PlayerController : MonoBehaviour
         {
             if (hit.transform.gameObject.CompareTag("Key"))
             {
+                audioSource.PlayOneShot(keyPickupSound, 1f);
                 playerCharacter.addKey();
                 Destroy(hit.transform.gameObject);
             }
 
             if (hit.transform.gameObject.CompareTag("Battery"))
             {
+                audioSource.PlayOneShot(batteryPickupSound, 1f);
                 playerCharacter.addBattery();
                 Destroy(hit.transform.gameObject);
             }
@@ -103,6 +133,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (playerCharacter.getKeys() > 0)
                 {
+                    audioSource.PlayOneShot(doorOpenSound, 1f);
                     Destroy(hit.transform.gameObject);
                     playerCharacter.removeKey();
                 }
@@ -114,17 +145,21 @@ public class PlayerController : MonoBehaviour
     {
         getMovement();
         getRotation();
-        
+
         if (getInteract())
         {
             applyInteract();
         }
-        
+
+        // 🔊 FLASHLIGHT CLICK
         if (getAttack())
         {
             Battery currentBattery = playerCharacter.getBattery();
             if (currentBattery != null && currentBattery.getBatteryLife() > 0)
             {
+                if (!flashlight_l.enabled)
+                    audioSource.PlayOneShot(flashlightClickSound, 0.7f);
+
                 flashlight_l.enabled = true;
                 currentBattery.decrementTime();
             }
@@ -135,19 +170,24 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (flashlight_l.enabled)
+                audioSource.PlayOneShot(flashlightClickSound, 0.6f);
+
             flashlight_l.enabled = false;
         }
 
+        // 🔊 BATTERY RELOAD SOUND
         if (getReload())
         {
+            audioSource.PlayOneShot(reloadSound, 0.8f);
             playerCharacter.reloadFlashlight();
         }
     }
-    
+
     private void getMovement()
     {
         Quaternion targetRotation_q = Quaternion.Euler(transform.rotation.eulerAngles);
-        
+
         move_v = move_ia.action.ReadValue<Vector2>();
         move_v = new Vector3(move_v.x, 0f, move_v.y);
         move_v = targetRotation_q * move_v;
@@ -163,22 +203,22 @@ public class PlayerController : MonoBehaviour
     {
         return interact_ia.action.IsPressed();
     }
-    
+
     private bool getAttack()
     {
         return attack_ia.action.IsPressed();
     }
-    
+
     private bool getReload()
     {
         return reload_ia.action.WasCompletedThisFrame();
     }
-    
+
     private bool getCrouch()
     {
         return crouch_ia.action.IsPressed();
     }
-    
+
     private bool getSprint()
     {
         return sprint_ia.action.IsPressed();
