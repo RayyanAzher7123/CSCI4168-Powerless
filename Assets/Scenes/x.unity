@@ -1371,6 +1371,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1781555164194001046, guid: 289c1b55c9541489481df5cc06664110, type: 3}
     - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+      propertyPath: reloadSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 32a88c98a8c20439189b01ed7fb96c24, type: 3}
+    - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
       propertyPath: sensitivity
       value: 0.5
       objectReference: {fileID: 0}
@@ -1379,9 +1383,29 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+      propertyPath: doorOpenSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 44b63b0db16ce624b97e45ebde0a0971, type: 3}
+    - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+      propertyPath: footstepSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 21b01d51dd4ab480aaf0623ca8ca1686, type: 3}
+    - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
       propertyPath: reachDistance
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+      propertyPath: keyPickupSound
+      value: 
+      objectReference: {fileID: 8300000, guid: bfde59f9c97f64453bc08e7e133b3a42, type: 3}
+    - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+      propertyPath: batteryPickupSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 8453795ef43024e99975d9363e938da2, type: 3}
+    - target: {fileID: 3113033351620996382, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
+      propertyPath: flashlightClickSound
+      value: 
+      objectReference: {fileID: 8300000, guid: cb62a366e6ddb48769b20791d457df43, type: 3}
     - target: {fileID: 4567444265213499193, guid: f0099c3c4e208014ea4efb7e74b370e0, type: 3}
       propertyPath: m_Drag
       value: 3
