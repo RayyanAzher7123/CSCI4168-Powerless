@@ -7,14 +7,17 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI key_tm;
     [SerializeField] private TextMeshProUGUI battery_tm;
     [SerializeField] private TextMeshProUGUI batteryLife_tm;
+    [SerializeField] private TextMeshProUGUI electricGear_tm;
 
     private float keys;
     public List<Battery> batteries;
     private int batteryIndex;
+    private int electricalGear;
 
     void Start()
     {
         batteryIndex = 0;
+        electricalGear = 0;
         batteries = new  List<Battery>();
     }
     
@@ -22,6 +25,7 @@ public class PlayerCharacter : MonoBehaviour
     {
         key_tm.text = "Keys: " + keys;
         battery_tm.text = "Batteries: " + batteries.Count;
+        electricGear_tm.text = "Electric Gear: " + electricalGear;
 
         if (batteries.Count > 0)
         {
@@ -36,6 +40,11 @@ public class PlayerCharacter : MonoBehaviour
     {
         keys++;
     }
+    
+    public void addGear()
+    {
+        electricalGear++;
+    }
 
     public void removeKey()
     {
@@ -45,6 +54,11 @@ public class PlayerCharacter : MonoBehaviour
     public float getKeys()
     {
         return keys;
+    }
+    
+    public float getGear()
+    {
+        return electricalGear;
     }
 
     public void addBattery()

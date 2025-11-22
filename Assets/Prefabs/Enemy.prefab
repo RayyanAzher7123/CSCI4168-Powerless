@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 4498547672281409803}
   - component: {fileID: 3770408447308036680}
   - component: {fileID: 5847731489708006864}
+  - component: {fileID: 6185717854576544160}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -144,9 +145,11 @@ MonoBehaviour:
   attacking_es: {fileID: 141824569276983044}
   frozen_es: {fileID: 4498547672281409803}
   returning_es: {fileID: 5847731489708006864}
+  kill_es: {fileID: 6185717854576544160}
   state: {fileID: 0}
   moveSpeed: 2
   agroDistance: 10
+  attackDistance: 2
   idleDistance: 1
   flashlightFreezeAngle: 0
   flashlightFreezeDistance: 12
@@ -196,6 +199,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f81bafcdaceb33f49a9fde3d7f1d136e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6185717854576544160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 336814368941478271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79fb27be2fbb26a4da97923674073afd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &724259143071430558

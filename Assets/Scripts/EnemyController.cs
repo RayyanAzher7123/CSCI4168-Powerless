@@ -14,11 +14,13 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private attacking_enemyState attacking_es;
     [SerializeField] private frozen_enemyState frozen_es;
     [SerializeField] private returning_enemyState returning_es;
+    [SerializeField] private kill_enemyState  kill_es;
     [SerializeField] private GenericState state;
     private GenericState nextState;
     
     [SerializeField] private float moveSpeed;
     [SerializeField] private float agroDistance;
+    [SerializeField] private float attackDistance;
     [SerializeField] private float idleDistance;
     [SerializeField] private float flashlightFreezeAngle;
     [SerializeField] private float flashlightFreezeDistance;
@@ -38,6 +40,7 @@ public class EnemyController : MonoBehaviour
         attacking_es.Setup(enemy_go);
         frozen_es.Setup(enemy_go);
         returning_es.Setup(enemy_go);
+        kill_es.Setup(enemy_go);
         state =  idle_es;
         nextState = idle_es;
 
@@ -82,6 +85,10 @@ public class EnemyController : MonoBehaviour
                 }
                 break;
             case attacking_enemyState:
+                if (canKill())
+                {
+                    nextState = kill_es;
+                }
                 if (inLight())
                 {
                     nextState = frozen_es;
@@ -133,6 +140,11 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    private bool canKill()
+    {
+        return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < attackDistance;
+    }
+    
     private bool inIdlePosition()
     {
         return Vector3.Distance(currentIdlePoint_v3, enemy_go.transform.position) < idleDistance;
@@ -236,5 +248,10 @@ public class EnemyController : MonoBehaviour
     public void stopEnemyMovement()
     {
         enemy_nma.SetDestination(enemy_go.transform.position);
+    }
+
+    public void killPlayer()
+    {
+        player_go.GetComponentInChildren<PlayerController>().killPlayer();
     }
 }

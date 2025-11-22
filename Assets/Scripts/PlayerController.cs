@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetRotate_v;
     private Rigidbody player_rb;
     private Camera camera_c;
+    private bool isDead;
     
     void Start()
     {
@@ -35,6 +36,7 @@ public class PlayerController : MonoBehaviour
         flashlight_l = flashlight.GetComponent<Light>();
         player_rb = player.GetComponent<Rigidbody>();
         camera_c = player.GetComponentInChildren<Camera>();
+        isDead = false;
     }
 
     void Update()
@@ -44,7 +46,10 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        applyInputs();
+        if (!isDead)
+        {
+            applyInputs();
+        }
     }
 
     private void applyInputs()
@@ -98,6 +103,12 @@ public class PlayerController : MonoBehaviour
                 playerCharacter.addBattery();
                 Destroy(hit.transform.gameObject);
             }
+            
+            if (hit.transform.gameObject.CompareTag("Gear"))
+            {
+                playerCharacter.addGear();
+                Destroy(hit.transform.gameObject);
+            }
 
             if (hit.transform.gameObject.CompareTag("Door"))
             {
@@ -105,6 +116,14 @@ public class PlayerController : MonoBehaviour
                 {
                     Destroy(hit.transform.gameObject);
                     playerCharacter.removeKey();
+                }
+            }
+            
+            if (hit.transform.gameObject.CompareTag("Generator"))
+            {
+                if (playerCharacter.getGear() > 0)
+                {
+                    Debug.Log("Win!");
                 }
             }
         }
@@ -191,5 +210,10 @@ public class PlayerController : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public void killPlayer()
+    {
+        isDead = true;
     }
 }

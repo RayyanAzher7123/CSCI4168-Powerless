@@ -7,6 +7,8 @@ TagManager:
   - Key
   - Battery
   - Door
+  - Gear
+  - Generator
   layers:
   - Default
   - TransparentFX
