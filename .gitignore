@@ -17,6 +17,12 @@
 *.blend1
 *.blend1.meta
 
+# MasOS
+.DS_Store
+
+# Unity UI Toolkit Schema files (auto-generated)
+UIElementsSchema/
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
@@ -32,6 +38,8 @@
 # Jetbrains Rider personal-layer settings
 *.DotSettings.user
 
+#Jetbrain Rider cache directory
+.idea/
 # Visual Studio cache directory
 .vs/
 
