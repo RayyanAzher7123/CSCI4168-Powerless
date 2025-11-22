@@ -140,6 +140,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    // Return true if enemy is close enough to player
     private bool canKill()
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < attackDistance;

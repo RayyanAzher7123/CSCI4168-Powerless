@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference reload_ia;
     [SerializeField] private InputActionReference crouch_ia;
     [SerializeField] private InputActionReference sprint_ia;
-    
     
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
@@ -42,10 +42,17 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         getInputs();
+        
+        // Check when player resets the level
+        if (isDead)
+        {
+           restartScene();
+        }
     }
 
     private void FixedUpdate()
     {
+        // Cheesey way to make a death state, by only applying inputs if player is alive
         if (!isDead)
         {
             applyInputs();
@@ -123,7 +130,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (playerCharacter.getGear() > 0)
                 {
-                    Debug.Log("Win!");
+                    loadNextScene();
                 }
             }
         }
@@ -139,8 +146,10 @@ public class PlayerController : MonoBehaviour
             applyInteract();
         }
         
+        // If left click
         if (getAttack())
         {
+            // If player has battery equipped and has battery life then turn of flashlight
             Battery currentBattery = playerCharacter.getBattery();
             if (currentBattery != null && currentBattery.getBatteryLife() > 0)
             {
@@ -215,5 +224,25 @@ public class PlayerController : MonoBehaviour
     public void killPlayer()
     {
         isDead = true;
+    }
+
+    private void loadNextScene()
+    {
+        if (SceneManager.GetActiveScene().buildIndex + 1 < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
+        else
+        {
+            Debug.Log("No scene to load");
+        }
+    }
+
+    private void restartScene()
+    {
+        if (getInteract())
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 }
