@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
+
 
 public class EnemyController : MonoBehaviour
 {
@@ -24,6 +26,27 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float idleDistance;
     [SerializeField] private float flashlightFreezeAngle;
     [SerializeField] private float flashlightFreezeDistance;
+
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip freezeClip;
+
+    [SerializeField] private AudioClip footstepClip;
+    [SerializeField] private float footstepInterval = 0.5f;
+    private float footstepTimer = 0f;
+
+
+    [SerializeField] private AudioSource ambientSource;
+    [SerializeField] private AudioClip ambientClip;
+
+    [SerializeField] private AudioClip growlClip;
+    [SerializeField] private float growlMinDelay = 5f;
+    [SerializeField] private float growlMaxDelay = 15f;
+    private float growlTimer;
+
+    [SerializeField] private AudioClip attackClip;
+    [SerializeField] private AudioClip finalAttackClip;
+
+
 
     private Vector3[] idlePoints_v3;
     private Vector3 currentIdlePoint_v3;
@@ -58,6 +81,9 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         state.Do();
+        HandleFootsteps();
+        HandleAmbient();
+        HandleGrowls();
     }
 
     void FixedUpdate()
@@ -255,4 +281,62 @@ public class EnemyController : MonoBehaviour
     {
         player_go.GetComponentInChildren<PlayerController>().killPlayer();
     }
+
+    public void PlayFreezeSound()
+    {
+        audioSource.PlayOneShot(freezeClip);
+    }
+
+    private void HandleFootsteps()
+    {
+    if (enemy_nma.velocity.magnitude > 0.1f)
+    {
+        footstepTimer -= Time.deltaTime;
+        if (footstepTimer <= 0f)
+        {
+            audioSource.PlayOneShot(footstepClip);
+            footstepTimer = footstepInterval;
+        }
+    }
+    }
+    public void PlayAttackSound()
+    {
+        audioSource.PlayOneShot(attackClip);
+    }
+
+    private void HandleAmbient()
+    {
+    if (!ambientSource.isPlaying)
+    {
+        ambientSource.clip = ambientClip;
+        ambientSource.loop = true;
+        ambientSource.Play();
+    }
+    }
+
+    private void HandleGrowls()
+    {
+    growlTimer -= Time.deltaTime;
+    if (growlTimer <= 0f)
+    {
+        audioSource.PlayOneShot(growlClip);
+        growlTimer = Random.Range(growlMinDelay, growlMaxDelay);
+    }
+    }
+
+    public void PlayFinalAttackAndDie()
+    {
+        StartCoroutine(FinalAttackSequence());
+    }
+
+    private IEnumerator FinalAttackSequence()
+    {
+    
+        audioSource.PlayOneShot(finalAttackClip);
+        yield return new WaitForSeconds(0.7f); 
+        UnityEngine.SceneManagement.SceneManager.LoadScene("DeathScene");
+
+    }
+
+
 }
