@@ -12,6 +12,7 @@ public class frozen_enemyState : GenericState
     public override void Enter()
     {
         enemyController.stopEnemyMovement();
+        enemyController.PlayFreezeSound(); 
     }
 
     public override void Do()

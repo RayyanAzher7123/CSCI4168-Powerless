@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class kill_enemyState : GenericState
 {
@@ -12,7 +13,7 @@ public class kill_enemyState : GenericState
     public override void Enter()
     {
         enemyController.killPlayer();
-        //TODO: Play death animation
+        enemyController.PlayFinalAttackAndDie();
     }
 
     public override void Do()
