@@ -32,14 +32,31 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetRotate_v;
     private Rigidbody player_rb;
     private Camera camera_c;
+    private CapsuleCollider capsule;
+    private float originalHeight;
+    private float crouchHeight;
+    private Vector3 originalCenter;
+    private Vector3 crouchCenter;
     private bool isDead;
 
     void Start()
     {
         playerCharacter = GetComponent<PlayerCharacter>();
+
         flashlight_l = flashlight.GetComponent<Light>();
+
         player_rb = player.GetComponent<Rigidbody>();
+
         camera_c = player.GetComponentInChildren<Camera>();
+
+        capsule = player.GetComponent<CapsuleCollider>();
+
+        originalHeight = capsule.height;
+        crouchHeight = originalHeight * 0.5f;
+
+        originalCenter = capsule.center;
+        crouchCenter = new Vector3(originalCenter.x, originalCenter.y * 0.5f, originalCenter.z);
+
         isDead = false;
     }
 
@@ -67,8 +84,9 @@ public class PlayerController : MonoBehaviour
     {
         if (getCrouch())
         {
-            player.transform.localScale = new Vector3(1f, 1f, 1f);
+
             applyMovement(crouchSpeed);
+
         }
         else if (getSprint())
         {
@@ -82,7 +100,8 @@ public class PlayerController : MonoBehaviour
         }
 
         applyRotation();
-        ApplyCrouchHeight();
+        applyCrouchHeight();
+        applyColliderCrouchHeight();
     }
 
     private void applyMovement(float speed)
@@ -100,13 +119,36 @@ public class PlayerController : MonoBehaviour
         camera_go.transform.localRotation = Quaternion.Slerp(camera_c.transform.localRotation, Quaternion.Euler(rotate_v.y, 0, 0), 0.2f);
     }
 
-    private void ApplyCrouchHeight()
+    private void applyCrouchHeight()
     {
         Vector3 camPos = camera_go.transform.localPosition;
         float targetY = getCrouch() ? crouchingCameraY : standingCameraY;
         camPos.y = Mathf.Lerp(camPos.y, targetY, Time.deltaTime * cameraSmooth);
         camera_go.transform.localPosition = camPos;
     }
+
+    private void applyColliderCrouchHeight()
+    {
+        // Adjust collider to pass under obstacles
+        if (getCrouch())
+        {
+            capsule.height = Mathf.Lerp(capsule.height, crouchHeight, Time.deltaTime * 12f);
+            capsule.center = Vector3.Lerp(capsule.center, crouchCenter, Time.deltaTime * 12f);
+            return;
+        }
+
+        if (!getCrouch() && canStandUp())
+        {
+            capsule.height = Mathf.Lerp(capsule.height, originalHeight, Time.deltaTime * 12f);
+            capsule.center = Vector3.Lerp(capsule.center, originalCenter, Time.deltaTime * 12f);
+        }
+    }
+
+    private bool canStandUp()
+    {
+        return !Physics.Raycast(player.transform.position, Vector3.up, originalHeight * 0.6f);
+    }
+
 
 
     private void applyInteract()
