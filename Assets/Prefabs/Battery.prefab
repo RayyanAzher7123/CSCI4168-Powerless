@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5257605081535736929}
   - component: {fileID: 5331430071356642238}
   - component: {fileID: 7069458114608128117}
-  - component: {fileID: 8710699999790490590}
+  - component: {fileID: -509582552212189071}
   m_Layer: 0
   m_Name: Battery
   m_TagString: Battery
@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 2822351908994841987}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.6127014, y: 0, z: 4.2473373}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalPosition: {x: 0.6127014, y: 0, z: 3.737}
+  m_LocalScale: {x: 4.57, y: 4.57, z: 4.57}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2822351908994841987}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -4821300124380478740, guid: f85c59cb4a4bd4e8f935f5ec96428ead, type: 3}
 --- !u!23 &7069458114608128117
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d3f1c2086cf1f4cf594702d67db0f73a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,8 +87,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8710699999790490590
-BoxCollider:
+--- !u!64 &-509582552212189071
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -105,6 +105,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4821300124380478740, guid: f85c59cb4a4bd4e8f935f5ec96428ead, type: 3}

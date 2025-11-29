@@ -76,17 +76,17 @@ public class PlayerController : MonoBehaviour
         // Movement speed selection
         if (getCrouch())
         {
-            player.transform.localScale = new Vector3(1f, 0.5f, 1f);
+            player.transform.localScale = new Vector3(1f, 1f, 1f);
             applyMovement(crouchSpeed);
         }
         else if (getSprint())
         {
-            player.transform.localScale = Vector3.one;
+            player.transform.localScale = new Vector3(1f, 1.5f, 1f);
             applyMovement(sprintSpeed);
         }
         else
         {
-            player.transform.localScale = Vector3.one;
+            player.transform.localScale = new Vector3(1f, 1.5f, 1f);
             applyMovement(walkSpeed);
         }
 
@@ -124,8 +124,10 @@ public class PlayerController : MonoBehaviour
 
     private void applyInteract()
     {
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, reachDistance))
+        
+        if (Physics.Raycast(camera_go.transform.position, camera_go.transform.forward, out RaycastHit hit, reachDistance))
         {
+            Debug.Log(hit.transform.name);
             // KEY PICKUP
             if (hit.transform.CompareTag("Key"))
             {
