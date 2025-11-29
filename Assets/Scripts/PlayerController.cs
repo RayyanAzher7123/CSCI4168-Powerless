@@ -15,8 +15,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference crouch_ia;
     [SerializeField] private InputActionReference sprint_ia;
 
+
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
+    [SerializeField] private float standingCameraY = 0.7f;
+    [SerializeField] private float crouchingCameraY = 0.3f;
+    [SerializeField] private float cameraSmooth = 8f;
     [SerializeField] private float sprintSpeed;
     [SerializeField] private float sensitivity;
     [SerializeField] private float reachDistance;
@@ -63,7 +67,7 @@ public class PlayerController : MonoBehaviour
     {
         if (getCrouch())
         {
-            player.transform.localScale = new Vector3(1f, 0.5f, 1f);
+            player.transform.localScale = new Vector3(1f, 1f, 1f);
             applyMovement(crouchSpeed);
         }
         else if (getSprint())
@@ -78,6 +82,7 @@ public class PlayerController : MonoBehaviour
         }
 
         applyRotation();
+        ApplyCrouchHeight();
     }
 
     private void applyMovement(float speed)
@@ -94,6 +99,15 @@ public class PlayerController : MonoBehaviour
         player.transform.localRotation = Quaternion.Slerp(player.transform.localRotation, Quaternion.Euler(0, rotate_v.x, 0), 0.2f);
         camera_go.transform.localRotation = Quaternion.Slerp(camera_c.transform.localRotation, Quaternion.Euler(rotate_v.y, 0, 0), 0.2f);
     }
+
+    private void ApplyCrouchHeight()
+    {
+        Vector3 camPos = camera_go.transform.localPosition;
+        float targetY = getCrouch() ? crouchingCameraY : standingCameraY;
+        camPos.y = Mathf.Lerp(camPos.y, targetY, Time.deltaTime * cameraSmooth);
+        camera_go.transform.localPosition = camPos;
+    }
+
 
     private void applyInteract()
     {
