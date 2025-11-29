@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference reload_ia;
     [SerializeField] private InputActionReference crouch_ia;
     [SerializeField] private InputActionReference sprint_ia;
-    
+
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
     [SerializeField] private float sprintSpeed;
@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody player_rb;
     private Camera camera_c;
     private bool isDead;
-    
+
     void Start()
     {
         playerCharacter = GetComponent<PlayerCharacter>();
@@ -42,11 +42,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         getInputs();
-        
+
         // Check when player resets the level
         if (isDead)
         {
-           restartScene();
+            restartScene();
         }
     }
 
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
         {
             player.transform.localScale = new Vector3(1f, 0.5f, 1f);
             applyMovement(crouchSpeed);
-        } 
+        }
         else if (getSprint())
         {
             player.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
             player.transform.localScale = new Vector3(1f, 1f, 1f);
             applyMovement(walkSpeed);
         }
-        
+
         applyRotation();
     }
 
@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
         rotate_v.x += targetRotate_v.x * sensitivity;
         rotate_v.y -= targetRotate_v.y * sensitivity;
         rotate_v.y = Mathf.Clamp(rotate_v.y, -70f, 70f);
-        
+
         player.transform.localRotation = Quaternion.Slerp(player.transform.localRotation, Quaternion.Euler(0, rotate_v.x, 0), 0.2f);
         camera_go.transform.localRotation = Quaternion.Slerp(camera_c.transform.localRotation, Quaternion.Euler(rotate_v.y, 0, 0), 0.2f);
     }
@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
                 playerCharacter.addBattery();
                 Destroy(hit.transform.gameObject);
             }
-            
+
             if (hit.transform.gameObject.CompareTag("Gear"))
             {
                 playerCharacter.addGear();
@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour
                     playerCharacter.removeKey();
                 }
             }
-            
+
             if (hit.transform.gameObject.CompareTag("Generator"))
             {
                 if (playerCharacter.getGear() > 0)
@@ -140,18 +140,22 @@ public class PlayerController : MonoBehaviour
     {
         getMovement();
         getRotation();
-        
+
         if (getInteract())
         {
             applyInteract();
         }
-        
+
         // If left click
         if (getAttack())
         {
-            // If player has battery equipped and has battery life then turn of flashlight
+            // If player has 
+            // -battery equipped
+            // -has battery life 
+            // -is not dead
+            // then turn of flashlight
             Battery currentBattery = playerCharacter.getBattery();
-            if (currentBattery != null && currentBattery.getBatteryLife() > 0)
+            if (currentBattery != null && currentBattery.getBatteryLife() > 0 && !isDead)
             {
                 flashlight_l.enabled = true;
                 currentBattery.decrementTime();
@@ -171,11 +175,11 @@ public class PlayerController : MonoBehaviour
             playerCharacter.reloadFlashlight();
         }
     }
-    
+
     private void getMovement()
     {
         Quaternion targetRotation_q = Quaternion.Euler(transform.rotation.eulerAngles);
-        
+
         move_v = move_ia.action.ReadValue<Vector2>();
         move_v = new Vector3(move_v.x, 0f, move_v.y);
         move_v = targetRotation_q * move_v;
@@ -191,22 +195,22 @@ public class PlayerController : MonoBehaviour
     {
         return interact_ia.action.IsPressed();
     }
-    
+
     private bool getAttack()
     {
         return attack_ia.action.IsPressed();
     }
-    
+
     private bool getReload()
     {
         return reload_ia.action.WasCompletedThisFrame();
     }
-    
+
     private bool getCrouch()
     {
         return crouch_ia.action.IsPressed();
     }
-    
+
     private bool getSprint()
     {
         return sprint_ia.action.IsPressed();
@@ -224,6 +228,16 @@ public class PlayerController : MonoBehaviour
     public void killPlayer()
     {
         isDead = true;
+    }
+
+    public bool getIsDead()
+    {
+        return isDead;
+    }
+
+    public GameObject getPlayerGameObject()
+    {
+        return player;
     }
 
     private void loadNextScene()
