@@ -73,7 +73,7 @@ public class DeathSceneController : MonoBehaviour
     void Update()
     {
         if (canRestart && Input.GetKeyDown(KeyCode.Space))
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            SceneManager.LoadScene("x");
     }
 
     // ------------------------------------------------------

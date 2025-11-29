@@ -12,6 +12,8 @@ public class attacking_enemyState : GenericState
     public override void Enter()
     {
         enemyController.activateActiveModel();
+        enemyController.PlayAttackSound();
+        
     }
 
     public override void Do()
