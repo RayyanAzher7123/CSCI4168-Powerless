@@ -165,12 +165,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1779566378496839763}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.166, y: -0.194, z: 0.4}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: 1, y: -0.08000016, z: -0.040000226}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1307742970809292958}
+  m_Father: {fileID: 5105147666689418580}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &1886507828843313470
 Light:
@@ -294,6 +294,9 @@ MonoBehaviour:
   sprint_ia: {fileID: -7471211009204490832, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   walkSpeed: 3
   crouchSpeed: 2
+  standingCameraY: 0.7
+  crouchingCameraY: 0.3
+  cameraSmooth: 8
   sprintSpeed: 5
   sensitivity: 0.5
   reachDistance: 2
@@ -312,6 +315,7 @@ MonoBehaviour:
   key_tm: {fileID: 0}
   battery_tm: {fileID: 0}
   batteryLife_tm: {fileID: 0}
+  electricGear_tm: {fileID: 0}
 --- !u!1 &5589794441488482286
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,7 +346,8 @@ Transform:
   m_LocalPosition: {x: -0.168, y: -0.19, z: 0.35}
   m_LocalScale: {x: 0.050000004, y: 0.05, z: 0.050000004}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 2862020602649582347}
   m_Father: {fileID: 1307742970809292958}
   m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
 --- !u!33 &8175998513493109489
@@ -434,7 +439,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5105147666689418580}
-  - {fileID: 2862020602649582347}
   m_Father: {fileID: 8328758637601322734}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4675371469759120995
