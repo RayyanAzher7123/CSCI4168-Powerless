@@ -11,6 +11,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject idle_go;
     [SerializeField] private GameObject idlePoints_go;
     [SerializeField] private GameObject active_go;
+    [SerializeField] private GameObject playerCamera_go;
 
     [SerializeField] private idle_enemyState idle_es;
     [SerializeField] private attacking_enemyState attacking_es;
@@ -69,7 +70,7 @@ public class EnemyController : MonoBehaviour
 
         setupIdlePoints();
         
-        flashlight = flashlight_go.GetComponent<Light>();
+        flashlight = flashlight_go.GetComponentInChildren<Light>();
         flashlightFreezeAngle = flashlight.spotAngle / 2f + 3f;
 
         enemy_nma = enemy_go.GetComponent<NavMeshAgent>();
@@ -191,13 +192,13 @@ public class EnemyController : MonoBehaviour
 
     private bool inLight()
     {
-        return inFlashlight() && inAmbientLight();
+        return inFlashlight() || inAmbientLight();
     }
 
     private bool inAmbientLight()
     {
         //TODO: Ambient light logic
-        return true;
+        return false;
     }
     
     private bool inFlashlight()
@@ -216,7 +217,11 @@ public class EnemyController : MonoBehaviour
 
     private bool isInFlashlightCone()
     {
-        return Vector3.Angle(flashlight_go.transform.forward, enemy_go.transform.position - flashlight_go.transform.position) < flashlightFreezeAngle;
+        Vector3 trueForward = new Vector3(flashlight_go.transform.forward.z, flashlight_go.transform.forward.y,
+            -flashlight_go.transform.forward.x);
+        Debug.Log(flashlight_go.transform.forward);
+        Debug.DrawLine(flashlight_go.transform.position, flashlight_go.transform.position + trueForward);
+        return Vector3.Angle(trueForward, enemy_go.transform.position - flashlight_go.transform.position) < flashlightFreezeAngle;
     }
 
     private bool isInFlashlightRange()
@@ -310,7 +315,7 @@ public class EnemyController : MonoBehaviour
     {
         ambientSource.clip = ambientClip;
         ambientSource.loop = true;
-        ambientSource.Play();
+        //ambientSource.Play();
     }
     }
 

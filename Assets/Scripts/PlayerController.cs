@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference reload_ia;
     [SerializeField] private InputActionReference crouch_ia;
     [SerializeField] private InputActionReference sprint_ia;
+    [SerializeField] private InputActionReference hold_ia;
 
     [Header("Movement Settings")]
     [SerializeField] private float walkSpeed;
@@ -46,16 +47,19 @@ public class PlayerController : MonoBehaviour
     private Camera camera_c;
     private bool isDead = false;
     private float timer;
+    private Quaternion flashlight_q;
+    private bool holdToggle;
 
     void Start()
     {
         playerCharacter = GetComponent<PlayerCharacter>();
-        flashlight_l = flashlight.GetComponent<Light>();
+        flashlight_l = flashlight.GetComponentInChildren<Light>();
         player_rb = player.GetComponent<Rigidbody>();
         camera_c = player.GetComponentInChildren<Camera>();
 
         audioSource = gameObject.AddComponent<AudioSource>();
         timer = 0;
+        holdToggle = false;
     }
 
     void Update()
@@ -226,6 +230,23 @@ public class PlayerController : MonoBehaviour
 
             flashlight_l.enabled = false;
         }
+        
+        if (getHold() && !holdToggle)
+        {
+            flashlight_q = flashlight.transform.rotation;
+            
+            holdToggle = true;
+        } 
+        else if (getHold() && holdToggle)
+        {
+            flashlight.transform.rotation = flashlight_q;
+        }
+        else
+        {
+            flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f , 270f, 0f);
+            
+            holdToggle = false;
+        }
 
         // RELOAD
         if (getReload())
@@ -250,6 +271,7 @@ public class PlayerController : MonoBehaviour
         targetRotate_v = look_ia.action.ReadValue<Vector2>();
     }
 
+    private bool getHold() => hold_ia.action.IsPressed();
     private bool getInteract() => interact_ia.action.IsPressed();
     private bool getAttack() => attack_ia.action.IsPressed();
     private bool getReload() => reload_ia.action.WasCompletedThisFrame();
