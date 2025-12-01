@@ -15,7 +15,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference crouch_ia;
     [SerializeField] private InputActionReference sprint_ia;
 
-
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
     [SerializeField] private float standingCameraY = 0.7f;

@@ -9,15 +9,16 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject idle_go;
     [SerializeField] private GameObject idlePoints_go;
     [SerializeField] private GameObject active_go;
+    [SerializeField] private Animator enemyAnimator;
 
     [SerializeField] private idle_enemyState idle_es;
     [SerializeField] private attacking_enemyState attacking_es;
     [SerializeField] private frozen_enemyState frozen_es;
     [SerializeField] private returning_enemyState returning_es;
-    [SerializeField] private kill_enemyState  kill_es;
+    [SerializeField] private kill_enemyState kill_es;
     [SerializeField] private GenericState state;
     private GenericState nextState;
-    
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float agroDistance;
     [SerializeField] private float attackDistance;
@@ -33,7 +34,7 @@ public class EnemyController : MonoBehaviour
     private Light flashlight;
     private NavMeshAgent enemy_nma;
     private Collider enemy_c;
-    
+
     void Start()
     {
         idle_es.Setup(enemy_go);
@@ -41,17 +42,17 @@ public class EnemyController : MonoBehaviour
         frozen_es.Setup(enemy_go);
         returning_es.Setup(enemy_go);
         kill_es.Setup(enemy_go);
-        state =  idle_es;
+        state = idle_es;
         nextState = idle_es;
 
         setupIdlePoints();
-        
+
         flashlight = flashlight_go.GetComponent<Light>();
         flashlightFreezeAngle = flashlight.spotAngle / 2f + 3f;
 
         enemy_nma = enemy_go.GetComponent<NavMeshAgent>();
         enemy_c = enemy_go.GetComponent<CapsuleCollider>();
-        
+
         InvokeRepeating("checkPlayer", 0, 1f);
     }
 
@@ -64,6 +65,8 @@ public class EnemyController : MonoBehaviour
     {
         state.FixedDo();
         selectState();
+        Debug.Log("Current Enemy State: " + state.GetType().Name);
+        Debug.Log("Current Animation Clip: " + enemyAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
     }
 
     private void selectState()
@@ -74,14 +77,14 @@ public class EnemyController : MonoBehaviour
                 if (inLight())
                 {
                     nextState = frozen_es;
-                } 
+                }
                 else if (canSeePlayer)
                 {
                     nextState = attacking_es;
-                } 
+                }
                 else if (!inIdlePosition())
-                { 
-                    nextState = returning_es; 
+                {
+                    nextState = returning_es;
                 }
                 break;
             case attacking_enemyState:
@@ -92,7 +95,7 @@ public class EnemyController : MonoBehaviour
                 if (inLight())
                 {
                     nextState = frozen_es;
-                } 
+                }
                 else if (!canSeePlayer)
                 {
                     nextState = returning_es;
@@ -104,14 +107,14 @@ public class EnemyController : MonoBehaviour
                     if (canSeePlayer)
                     {
                         nextState = attacking_es;
-                    } 
+                    }
                     else if (!inIdlePosition())
                     {
                         nextState = returning_es;
                     }
                     else
                     {
-                        nextState =  idle_es;
+                        nextState = idle_es;
                     }
                 }
                 break;
@@ -119,14 +122,14 @@ public class EnemyController : MonoBehaviour
                 if (inLight())
                 {
                     nextState = frozen_es;
-                } 
+                }
                 else if (canSeePlayer)
                 {
                     nextState = attacking_es;
-                } 
+                }
                 else if (inIdlePosition())
-                { 
-                    nextState = idle_es; 
+                {
+                    nextState = idle_es;
                 }
                 break;
         }
@@ -145,7 +148,7 @@ public class EnemyController : MonoBehaviour
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < attackDistance;
     }
-    
+
     private bool inIdlePosition()
     {
         return Vector3.Distance(currentIdlePoint_v3, enemy_go.transform.position) < idleDistance;
@@ -173,7 +176,7 @@ public class EnemyController : MonoBehaviour
         //TODO: Ambient light logic
         return true;
     }
-    
+
     private bool inFlashlight()
     {
         return flashlight.isActiveAndEnabled &&
@@ -197,7 +200,7 @@ public class EnemyController : MonoBehaviour
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < flashlightFreezeDistance;
     }
-    
+
     private bool isInAgroRange()
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < agroDistance;
@@ -215,21 +218,27 @@ public class EnemyController : MonoBehaviour
             idlePoints_v3[i] = t.position;
             i++;
         }
-        
-        currentIdlePoint_v3 =  idlePoints_v3[0];
+
+        currentIdlePoint_v3 = idlePoints_v3[0];
     }
-    
+
     public void activateIdleModel()
     {
         idle_go.SetActive(true);
         active_go.SetActive(false);
     }
-    
+
     public void activateActiveModel()
     {
         idle_go.SetActive(false);
         active_go.SetActive(true);
     }
+
+    public Animator getEnemyAnimator()
+    {
+        return enemyAnimator;
+    }
+
 
     public void huntPlayer()
     {

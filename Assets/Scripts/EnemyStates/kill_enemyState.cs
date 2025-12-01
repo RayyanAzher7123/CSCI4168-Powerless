@@ -3,7 +3,7 @@ using UnityEngine;
 public class kill_enemyState : GenericState
 {
     private EnemyController enemyController;
-    
+
     public override void Setup(GameObject parent)
     {
         enemyController = parent.GetComponentInChildren<EnemyController>();
@@ -12,21 +12,23 @@ public class kill_enemyState : GenericState
     public override void Enter()
     {
         enemyController.killPlayer();
-        //TODO: Play death animation
+        Animator animator = enemyController.getEnemyAnimator();
+        animator.SetBool("isKilling", true);
+        //TODO: Play death cutscene
     }
 
     public override void Do()
     {
-        
+
     }
 
     public override void FixedDo()
     {
-        
+
     }
 
     public override void Exit()
     {
-        
+
     }
 }

@@ -5,15 +5,17 @@ public class FlashlightBob : MonoBehaviour
     public float amplitude = 0.05f;
     public float speed = 8f;
     public float smooth = 8f;
-
-    private PlayerController playerController;
+    [SerializeField] private PlayerController playerController;
     private Rigidbody playerRB;
     private Vector3 initialLocalPos;
 
     void Start()
     {
-        // Find PlayerController (it is on Controller)
-        playerController = FindObjectOfType<PlayerController>();
+        // find PlayerController if still null
+        if (playerController == null)
+        {
+            playerController = FindFirstObjectByType<PlayerController>();
+        }
 
         if (playerController == null)
         {
@@ -22,7 +24,7 @@ public class FlashlightBob : MonoBehaviour
             return;
         }
 
-        // Grab the Player rigidbody (assigned in inspector on PlayerController)
+        // grab the player rigidbody
         playerRB = playerController.getPlayerGameObject().GetComponent<Rigidbody>();
 
         if (playerRB == null)
@@ -50,7 +52,7 @@ public class FlashlightBob : MonoBehaviour
     {
         float moveAmount = playerRB.linearVelocity.magnitude;
 
-        // No movement → reset bob position
+        // No movement, so reset bob position
         if (moveAmount < 0.1f)
         {
             ResetPosition();

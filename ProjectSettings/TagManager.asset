@@ -9,6 +9,7 @@ TagManager:
   - Door
   - Gear
   - Generator
+  - Mannequin
   layers:
   - Default
   - TransparentFX
