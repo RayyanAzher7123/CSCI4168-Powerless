@@ -28,6 +28,5 @@ public class attacking_enemyState : GenericState
 
     public override void Exit()
     {
-        
     }
 }

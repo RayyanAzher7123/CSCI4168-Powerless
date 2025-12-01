@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody player_rb;
     private Camera camera_c;
     private bool isDead = false;
+    private float timer;
 
     void Start()
     {
@@ -54,6 +55,7 @@ public class PlayerController : MonoBehaviour
         camera_c = player.GetComponentInChildren<Camera>();
 
         audioSource = gameObject.AddComponent<AudioSource>();
+        timer = 0;
     }
 
     void Update()
@@ -61,8 +63,8 @@ public class PlayerController : MonoBehaviour
         getInputs();
 
         // Reset level when dead
-        if (isDead)
-            restartScene();
+        //if (isDead)
+        //    restartScene();
     }
 
     private void FixedUpdate()
@@ -187,7 +189,24 @@ public class PlayerController : MonoBehaviour
         {
             Battery currentBattery = playerCharacter.getBattery();
 
-            if (currentBattery != null && currentBattery.getBatteryLife() > 0)
+            if (currentBattery != null && currentBattery.getIsLowBattery() && currentBattery.getBatteryLife() > 0)
+            {
+                timer += Time.deltaTime;
+                if (timer >= 0.1f)
+                {
+                    flashlight_l.enabled = true;
+                    currentBattery.decrementTime();
+                    if (timer >= 0.2f)
+                    {
+                        timer = 0;
+                    }
+                }
+                else
+                {
+                    flashlight_l.enabled = false;
+                }
+            }
+            else if (currentBattery != null && !currentBattery.getIsLowBattery())
             {
                 if (!flashlight_l.enabled)
                     audioSource.PlayOneShot(flashlightClickSound);

@@ -30,9 +30,9 @@ public class DeathSceneController : MonoBehaviour
 
     bool canRestart = false;
 
-    const float BLACK_HOLD = 2.2f;
-    const float STATIC_TIME = 1.1f;
-    const float GRAB_TIME = 0.8f;
+    const float BLACK_HOLD = 0f;
+    const float STATIC_TIME = 0f;
+    const float GRAB_TIME = 0.6f;
 
     uint noiseState = 987654;
 
@@ -57,7 +57,7 @@ public class DeathSceneController : MonoBehaviour
         staticSource.playOnAwake = false;
         staticSource.loop = true;
         staticSource.spatialBlend = 0f;
-        staticSource.volume = 0.45f;
+        staticSource.volume = 0.6f;
 
         staticTex = new Texture2D(512, 288, TextureFormat.RGB24, false);
         staticTex.filterMode = FilterMode.Point;

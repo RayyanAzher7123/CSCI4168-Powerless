@@ -281,7 +281,7 @@ Transform:
   m_GameObject: {fileID: 95047773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.2, z: 0.05}
+  m_LocalPosition: {x: 0, y: -0.8, z: -17}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -358,8 +358,8 @@ MonoBehaviour:
   flash: {fileID: 1590438463}
   bloodOverlay: {fileID: 1740798427}
   restartText: {fileID: 83876064}
-  slender: {fileID: 0}
-  slenderAnim: {fileID: 0}
+  slender: {fileID: 1301468851}
+  slenderAnim: {fileID: 1301468853}
   mainCamera: {fileID: 1107149412}
 --- !u!82 &567540219
 AudioSource:
@@ -372,7 +372,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 493f3b935b405433ab5db78abbde26a3, type: 3}
+  m_Resource: {fileID: 8300000, guid: f4f532d1cef3c4594942a946c2f871d6, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -748,6 +748,16 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1301468851 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4061999138098054953, guid: 7ff7b7200f3db4799b6cbdb095c77727, type: 3}
+  m_PrefabInstance: {fileID: 1119927354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1301468853 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6957573965259036736, guid: 7ff7b7200f3db4799b6cbdb095c77727, type: 3}
+  m_PrefabInstance: {fileID: 1119927354}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1590438461
 GameObject:
   m_ObjectHideFlags: 0
