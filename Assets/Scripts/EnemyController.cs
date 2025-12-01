@@ -6,9 +6,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject enemy_go;
     [SerializeField] private GameObject player_go;
     [SerializeField] private GameObject flashlight_go;
-    [SerializeField] private GameObject idle_go;
     [SerializeField] private GameObject idlePoints_go;
-    [SerializeField] private GameObject active_go;
     [SerializeField] private Animator enemyAnimator;
 
     [SerializeField] private idle_enemyState idle_es;
@@ -222,17 +220,17 @@ public class EnemyController : MonoBehaviour
         currentIdlePoint_v3 = idlePoints_v3[0];
     }
 
-    public void activateIdleModel()
-    {
-        idle_go.SetActive(true);
-        active_go.SetActive(false);
-    }
+    // public void activateIdleModel()
+    // {
+    //     idle_go.SetActive(true);
+    //     active_go.SetActive(false);
+    // }
 
-    public void activateActiveModel()
-    {
-        idle_go.SetActive(false);
-        active_go.SetActive(true);
-    }
+    // public void activateActiveModel()
+    // {
+    //     idle_go.SetActive(false);
+    //     active_go.SetActive(true);
+    // }
 
     public Animator getEnemyAnimator()
     {

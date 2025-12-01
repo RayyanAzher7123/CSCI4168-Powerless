@@ -11,7 +11,7 @@ public class idle_enemyState : GenericState
 
     public override void Enter()
     {
-        enemyController.activateIdleModel();
+
         enemyController.stopEnemyMovement();
         Animator animator = enemyController.getEnemyAnimator();
         animator.SetBool("isFrozen", true);

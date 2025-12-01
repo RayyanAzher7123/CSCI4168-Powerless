@@ -3,7 +3,7 @@ public class attacking_enemyState : GenericState
 {
     private EnemyController enemyController;
 
-    private bool running_animation = false;
+    private bool running_animation = true;
 
     public override void Setup(GameObject parent)
     {
@@ -17,7 +17,7 @@ public class attacking_enemyState : GenericState
 
     public override void Enter()
     {
-        enemyController.activateActiveModel();
+
         Animator animator = enemyController.getEnemyAnimator();
 
         if (animator == null)
