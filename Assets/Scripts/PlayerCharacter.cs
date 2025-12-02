@@ -76,6 +76,16 @@ public class PlayerCharacter : MonoBehaviour
         return null;
     }
     
+    public bool getIsLowBattery()
+    {
+        if (batteries.Count > 0)
+        {
+            return batteries[batteryIndex].getIsLowBattery();
+        }
+
+        return false;
+    }
+    
     public void reloadFlashlight()
     {
         if (batteries.Count <= 0)

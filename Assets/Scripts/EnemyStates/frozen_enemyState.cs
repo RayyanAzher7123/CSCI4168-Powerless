@@ -18,6 +18,7 @@ public class frozen_enemyState : GenericState
         animator.SetBool("isReturning", false);
         animator.SetBool("isKilling", false);
 
+        enemyController.PlayFreezeSound();
     }
 
     public override void Do()

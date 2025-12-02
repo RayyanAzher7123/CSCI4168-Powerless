@@ -44,6 +44,8 @@ public class attacking_enemyState : GenericState
             animator.SetBool("isWalking", true);
         }
 
+        enemyController.PlayAttackSound();
+
     }
 
     public override void Do()

@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Battery
 {
-    private int batteryLife = 10000;
+    private int startBatteryLife = 3000;
+    private int batteryLife = 3000;
     private bool isOn;
 
     public int getBatteryLife()
@@ -13,5 +14,10 @@ public class Battery
     public void decrementTime()
     {
         batteryLife -= 1;
+    }
+
+    public bool getIsLowBattery()
+    {
+        return batteryLife < startBatteryLife / 10;
     }
 }

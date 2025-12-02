@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class kill_enemyState : GenericState
 {
@@ -15,6 +16,7 @@ public class kill_enemyState : GenericState
         Animator animator = enemyController.getEnemyAnimator();
         animator.SetBool("isKilling", true);
         //TODO: Play death cutscene
+        enemyController.PlayFinalAttackAndDie();
     }
 
     public override void Do()
