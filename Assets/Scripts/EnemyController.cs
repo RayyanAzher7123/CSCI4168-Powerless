@@ -311,22 +311,22 @@ public class EnemyController : MonoBehaviour
 
     private void HandleAmbient()
     {
-    if (!ambientSource.isPlaying)
-    {
-        ambientSource.clip = ambientClip;
-        ambientSource.loop = true;
-        //ambientSource.Play();
-    }
+        if (!ambientSource.isPlaying)
+        {
+            ambientSource.clip = ambientClip;
+            ambientSource.loop = true;
+            //ambientSource.Play();
+        }
     }
 
     private void HandleGrowls()
     {
     growlTimer -= Time.deltaTime;
-    if (growlTimer <= 0f)
-    {
-        audioSource.PlayOneShot(growlClip);
-        growlTimer = Random.Range(growlMinDelay, growlMaxDelay);
-    }
+        if (growlTimer <= 0f)
+        {
+            audioSource.PlayOneShot(growlClip);
+            growlTimer = Random.Range(growlMinDelay, growlMaxDelay);
+        }
     }
 
     public void PlayFinalAttackAndDie()
