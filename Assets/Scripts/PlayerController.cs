@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -49,6 +49,14 @@ public class PlayerController : MonoBehaviour
     private float timer;
     private Quaternion flashlight_q;
     private bool holdToggle;
+
+    // Footstep variables
+    private float walkStepInterval = 0.6f;
+    private float sprintStepInterval = 0.35f;
+    private float footstepTimer = 0f;
+
+
+
 
     void Start()
     {
@@ -102,13 +110,28 @@ public class PlayerController : MonoBehaviour
     private void applyMovement(float speed)
     {
         player_rb.AddForce(move_v * speed);
-
         // FOOTSTEP SOUND
         if (move_v.magnitude > 0.1f && player_rb.linearVelocity.magnitude > 0.1f)
         {
-            if (!audioSource.isPlaying)
+            // Decrease timer
+            footstepTimer -= Time.deltaTime;
+
+            // Select interval based on movement (walk / sprint)
+            float interval = getSprint() ? sprintStepInterval : walkStepInterval;
+
+            // Play sound when timer reaches zero
+            if (footstepTimer <= 0f)
+            {
                 audioSource.PlayOneShot(footstepSound, 0.4f);
+                footstepTimer = interval;
+            }
         }
+        else
+        {
+            // Reset timer when player stops
+            footstepTimer = 0f;
+        }
+
     }
 
     private void applyRotation()
