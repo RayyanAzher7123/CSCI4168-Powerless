@@ -5022,6 +5022,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4008402496534727080, guid: c8cc69bbbd948524cbe9c5abd032062d, type: 3}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 4035675650074698840, guid: c8cc69bbbd948524cbe9c5abd032062d, type: 3}
       propertyPath: playerController
       value: 
