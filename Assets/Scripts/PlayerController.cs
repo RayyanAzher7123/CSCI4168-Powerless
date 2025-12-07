@@ -402,89 +402,86 @@ public class PlayerController : MonoBehaviour
         if (getHold() && !holdToggle)
         {
             flashlight_q = flashlight.transform.rotation;
-
-
             holdToggle = true;
         }
-    }
+
         else if (getHold() && holdToggle)
         {
             flashlight.transform.rotation = flashlight_q;
         }
         else
-{
-    flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f, 270f, 0f);
+        {
+            flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f, 270f, 0f);
 
-    flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f, 270f, 0f);
+            holdToggle = false;
+        }
 
-    holdToggle = false;
-}
 
-// RELOAD
-if (getReload())
-{
-    audioSource.PlayOneShot(reloadSound, 0.8f);
-    playerCharacter.reloadFlashlight();
-}
+        // RELOAD
+        if (getReload())
+        {
+            audioSource.PlayOneShot(reloadSound, 0.8f);
+            playerCharacter.reloadFlashlight();
+        }
     }
 
     private void getMovement()
-{
-    Quaternion targetRotation_q = Quaternion.Euler(transform.rotation.eulerAngles);
+    {
+        Quaternion targetRotation_q = Quaternion.Euler(transform.rotation.eulerAngles);
 
-    move_v = move_ia.action.ReadValue<Vector2>();
-    move_v = new Vector3(move_v.x, 0f, move_v.y);
-    move_v = targetRotation_q * move_v;
-    move_v = move_v.normalized * walkSpeed;
-}
+        move_v = move_ia.action.ReadValue<Vector2>();
+        move_v = new Vector3(move_v.x, 0f, move_v.y);
+        move_v = targetRotation_q * move_v;
+        move_v = move_v.normalized * walkSpeed;
+    }
 
-private void getRotation()
-{
-    targetRotate_v = look_ia.action.ReadValue<Vector2>();
-}
+    private void getRotation()
+    {
+        targetRotate_v = look_ia.action.ReadValue<Vector2>();
+    }
 
-private bool getHold() => hold_ia.action.IsPressed();
-private bool getInteract() => interact_ia.action.IsPressed();
-private bool getAttack() => attack_ia.action.IsPressed();
-private bool getReload() => reload_ia.action.WasCompletedThisFrame();
-private bool getCrouch() => crouch_ia.action.IsPressed();
-private bool getSprint() => sprint_ia.action.IsPressed();
+    private bool getHold() => hold_ia.action.IsPressed();
+    private bool getInteract() => interact_ia.action.IsPressed();
+    private bool getAttack() => attack_ia.action.IsPressed();
+    private bool getReload() => reload_ia.action.WasCompletedThisFrame();
+    private bool getCrouch() => crouch_ia.action.IsPressed();
+    private bool getSprint() => sprint_ia.action.IsPressed();
 
-public bool flashlightOn()
-{
-    return getAttack() &&
-           playerCharacter.getBattery() != null &&
-           playerCharacter.getBattery().getBatteryLife() > 0;
-}
+    public bool flashlightOn()
+    {
+        return getAttack() &&
+               playerCharacter.getBattery() != null &&
+               playerCharacter.getBattery().getBatteryLife() > 0;
+    }
 
-public void killPlayer()
-{
-    isDead = true;
-}
+    public void killPlayer()
+    {
+        isDead = true;
+    }
 
-public bool getIsDead()
-{
-    return isDead;
-}
+    public bool getIsDead()
+    {
+        return isDead;
+    }
 
-public GameObject getPlayerGameObject()
-{
-    return player;
-}
+    public GameObject getPlayerGameObject()
+    {
+        return player;
+    }
 
-private void loadNextScene()
-{
-    int next = SceneManager.GetActiveScene().buildIndex + 1;
+    private void loadNextScene()
+    {
+        int next = SceneManager.GetActiveScene().buildIndex + 1;
 
-    if (next < SceneManager.sceneCountInBuildSettings)
-        SceneManager.LoadScene(next);
-    else
-        Debug.Log("No scene to load");
-}
+        if (next < SceneManager.sceneCountInBuildSettings)
+            SceneManager.LoadScene(next);
+        else
+            Debug.Log("No scene to load");
+    }
 
-private void restartScene()
-{
-    if (getInteract())
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-}
+    private void restartScene()
+    {
+        if (getInteract())
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }
