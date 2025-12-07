@@ -324,6 +324,12 @@ public class EnemyController : MonoBehaviour
             ambientSource.loop = true;
             //ambientSource.Play();
         }
+        if (!ambientSource.isPlaying)
+        {
+            ambientSource.clip = ambientClip;
+            ambientSource.loop = true;
+            //ambientSource.Play();
+        }
     }
 
     private void HandleGrowls()
