@@ -208,30 +208,48 @@ public class EnemyController : MonoBehaviour
 
     private bool inFlashlight()
     {
-        return flashlight.isActiveAndEnabled &&
-               isInFlashlightRange() &&
-               isInFlashlightCone() &&
-               canSeeFlashlight();
+        bool on = flashlight.isActiveAndEnabled;
+        bool range = isInFlashlightRange();
+        bool cone = isInFlashlightCone();
+        bool ray = canSeeFlashlight();
+
+        Debug.Log($"FLASHLIGHT DEBUG -- On:{on}  Range:{range}  Cone:{cone}  Ray:{ray}");
+
+        return on && range && cone && ray;
     }
 
     private bool canSeeFlashlight()
     {
-        Physics.Raycast(flashlight_go.transform.position, enemy_go.transform.position - flashlight_go.transform.position, out RaycastHit hit);
-        return hit.collider == enemy_c;
+        Vector3 origin = flashlight_go.transform.position;
+        Vector3 dir = (enemy_go.transform.position - origin).normalized;
+
+        if (Physics.SphereCast(origin, 0.4f, dir, out RaycastHit hit, flashlightFreezeDistance))
+        {
+            return hit.collider.transform.root == enemy_go.transform;
+        }
+        return false;
     }
 
     private bool isInFlashlightCone()
     {
-        Vector3 trueForward = new Vector3(flashlight_go.transform.forward.z, flashlight_go.transform.forward.y,
-            -flashlight_go.transform.forward.x);
-        Debug.Log(flashlight_go.transform.forward);
-        Debug.DrawLine(flashlight_go.transform.position, flashlight_go.transform.position + trueForward);
-        return Vector3.Angle(trueForward, enemy_go.transform.position - flashlight_go.transform.position) < flashlightFreezeAngle;
+        Debug.Log("ANGLE = " +
+        Vector3.Angle(
+            flashlight_go.transform.forward,
+            enemy_go.transform.position - flashlight_go.transform.position
+        ));
+
+        return Vector3.Distance(
+        flashlight_go.transform.position,
+        enemy_go.transform.position
+        ) < flashlightFreezeDistance;
     }
 
     private bool isInFlashlightRange()
     {
-        return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < flashlightFreezeDistance;
+        return Vector3.Distance(
+        flashlight_go.transform.position,
+        enemy_go.transform.position
+        ) < flashlightFreezeDistance;
     }
 
     private bool isInAgroRange()
