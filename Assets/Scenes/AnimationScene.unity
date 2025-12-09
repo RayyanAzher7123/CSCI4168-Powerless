@@ -1025,7 +1025,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2405285783925038016, guid: 22e7d303a2d9bca4bbe562c4f03a9f99, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2405285783925038016, guid: 22e7d303a2d9bca4bbe562c4f03a9f99, type: 3}
       propertyPath: m_TagString
@@ -2427,7 +2427,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4634133549107902555, guid: 0e0239e35468305478fc83252f5c3628, type: 3}
       propertyPath: m_Speed
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4634133549107902555, guid: 0e0239e35468305478fc83252f5c3628, type: 3}
       propertyPath: m_Acceleration
@@ -2503,7 +2503,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8299712161149221493, guid: 0e0239e35468305478fc83252f5c3628, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8328758637601322734, guid: 0e0239e35468305478fc83252f5c3628, type: 3}
       propertyPath: m_LocalScale.x
