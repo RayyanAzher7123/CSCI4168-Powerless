@@ -164,7 +164,7 @@ public class PlayerController : MonoBehaviour
     {
         rotate_v.x += targetRotate_v.x * sensitivity;
         rotate_v.y -= targetRotate_v.y * sensitivity;
-        rotate_v.y = Mathf.Clamp(rotate_v.y, -20f, 20f);
+        rotate_v.y = Mathf.Clamp(rotate_v.y, -60f, 60f);
 
         player.transform.localRotation = Quaternion.Slerp(
             player.transform.localRotation,
@@ -340,7 +340,7 @@ public class PlayerController : MonoBehaviour
     private void UpdateInteractUI()
     {
         GameObject target = FindBestInteractable();
-        UpdateInteractText(target);
+        //UpdateInteractText(target);
     }
 
     private void getInputs()

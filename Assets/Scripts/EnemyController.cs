@@ -88,10 +88,10 @@ public class EnemyController : MonoBehaviour
     {
         state.FixedDo();
         selectState();
-        Debug.Log("Current Enemy State: " + state.GetType().Name);
+        //Debug.Log("Current Enemy State: " + state.GetType().Name);
         var clips = enemyAnimator.GetCurrentAnimatorClipInfo(0);
-        if (clips.Length > 0)
-            Debug.Log("Current Animation Clip: " + clips[0].clip.name);
+        //if (clips.Length > 0)
+            //Debug.Log("Current Animation Clip: " + clips[0].clip.name);
 
     }
 
@@ -213,7 +213,7 @@ public class EnemyController : MonoBehaviour
         bool cone = isInFlashlightCone();
         bool ray = canSeeFlashlight();
 
-        Debug.Log($"FLASHLIGHT DEBUG -- On:{on}  Range:{range}  Cone:{cone}  Ray:{ray}");
+        //Debug.Log($"FLASHLIGHT DEBUG -- On:{on}  Range:{range}  Cone:{cone}  Ray:{ray}");
 
         return on && range && cone && ray;
     }
@@ -232,11 +232,11 @@ public class EnemyController : MonoBehaviour
 
     private bool isInFlashlightCone()
     {
-        Debug.Log("ANGLE = " +
-        Vector3.Angle(
-            flashlight_go.transform.forward,
-            enemy_go.transform.position - flashlight_go.transform.position
-        ));
+        //Debug.Log("ANGLE = " +
+        //Vector3.Angle(
+        //    flashlight_go.transform.forward,
+        //    enemy_go.transform.position - flashlight_go.transform.position
+        //));
 
         return Vector3.Distance(
         flashlight_go.transform.position,
@@ -281,6 +281,7 @@ public class EnemyController : MonoBehaviour
 
     public void huntPlayer()
     {
+        Debug.DrawLine(enemy_go.transform.position, player_go.transform.position, Color.red );
         enemy_nma.SetDestination(player_go.transform.position);
     }
 
@@ -323,13 +324,13 @@ public class EnemyController : MonoBehaviour
     }
     public void PlayAttackSound()
     {
-        audioSource.PlayOneShot(attackClip);
+        //audioSource.PlayOneShot(attackClip);
     }
 
 
     public void PlayFinalAttackAndDie()
     {
-        Debug.Log("Loading DeathScene");
+        //Debug.Log("Loading DeathScene");
         UnityEngine.SceneManagement.SceneManager.LoadScene("DeathScene");
     }
 

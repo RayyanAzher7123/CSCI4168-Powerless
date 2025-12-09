@@ -23,17 +23,17 @@ public class PlayerCharacter : MonoBehaviour
     
     void Update()
     {
-        key_tm.text = "Keys: " + keys;
-        battery_tm.text = "Batteries: " + batteries.Count;
-        electricGear_tm.text = "Electric Gear: " + electricalGear;
+        //key_tm.text = "Keys: " + keys;
+        //battery_tm.text = "Batteries: " + batteries.Count;
+        //electricGear_tm.text = "Electric Gear: " + electricalGear;
 
-        if (batteries.Count > 0)
-        {
-            batteryLife_tm.text = "Battery Life: " + batteries[batteryIndex].getBatteryLife();
-        } else 
-        {
-            batteryLife_tm.text = "Battery Life: ---";
-        }
+        //if (batteries.Count > 0)
+        //{
+            //batteryLife_tm.text = "Battery Life: " + batteries[batteryIndex].getBatteryLife();
+        //} else 
+        //{
+            //batteryLife_tm.text = "Battery Life: ---";
+        //}
     }
 
     public void addKey()

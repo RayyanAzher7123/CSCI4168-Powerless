@@ -8,6 +8,8 @@ TagManager:
   - Battery
   - Door
   - Enemy
+  - Gear
+  - Generator
   layers:
   - Default
   - TransparentFX
@@ -15,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Move
   - 
   - 
   - 
