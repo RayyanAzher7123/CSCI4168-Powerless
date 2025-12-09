@@ -15,7 +15,6 @@ public class kill_enemyState : GenericState
         enemyController.killPlayer();
         Animator animator = enemyController.getEnemyAnimator();
         animator.SetBool("isKilling", true);
-        //TODO: Play death cutscene
         enemyController.PlayFinalAttackAndDie();
     }
 

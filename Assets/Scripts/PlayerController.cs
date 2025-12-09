@@ -23,8 +23,8 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
-    [SerializeField] private float standingCameraY = 0.7f;
-    [SerializeField] private float crouchingCameraY = 0.3f;
+    [SerializeField] private float standingCameraY = 1.5f;
+    [SerializeField] private float crouchingCameraY = 0.65f;
     [SerializeField] private float cameraSmooth = 8f;
     [SerializeField] private float sprintSpeed;
     [SerializeField] private float sensitivity;
@@ -55,9 +55,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalCenter;
     private Vector3 crouchCenter;
 
-    private bool isDead = false; //verify
-    private float timer;
+    private bool isDead = false;
     private Quaternion flashlight_q;
+    private bool wasFlashlightOn = false;
     private bool holdToggle;
 
     // Footstep variables
@@ -71,7 +71,14 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         playerCharacter = GetComponent<PlayerCharacter>();
+
         flashlight_l = flashlight.GetComponentInChildren<Light>(); //verify
+        if (flashlight_l == null)
+            Debug.LogError("Flashlight not assigned in PlayerController!");
+        flashlight_l.enabled = false;
+        wasFlashlightOn = false;
+        holdToggle = false;
+
         player_rb = player.GetComponent<Rigidbody>();
 
         camera_c = player.GetComponentInChildren<Camera>();
@@ -80,25 +87,18 @@ public class PlayerController : MonoBehaviour
 
         originalHeight = capsule.height;
         crouchHeight = originalHeight * 0.5f;
-
         originalCenter = capsule.center;
         crouchCenter = new Vector3(originalCenter.x, originalCenter.y * 0.5f, originalCenter.z);
 
         isDead = false;
 
         audioSource = gameObject.AddComponent<AudioSource>();
-        timer = 0;
-        holdToggle = false;
     }
 
     void Update()
     {
         getInputs();
         UpdateInteractUI(); // Guides player on what they can interact with
-
-        // Reset level when dead verify
-        //if (isDead)
-        //    restartScene();
     }
 
     private void FixedUpdate()
@@ -118,12 +118,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (getSprint())
         {
-            player.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            ///player.transform.localScale = new Vector3(1f, 1.5f, 1f);
             applyMovement(sprintSpeed);
         }
         else
         {
-            player.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            //player.transform.localScale = new Vector3(1f, 1.5f, 1f);
             applyMovement(walkSpeed);
         }
 
@@ -164,7 +164,7 @@ public class PlayerController : MonoBehaviour
     {
         rotate_v.x += targetRotate_v.x * sensitivity;
         rotate_v.y -= targetRotate_v.y * sensitivity;
-        rotate_v.y = Mathf.Clamp(rotate_v.y, -70f, 70f);
+        rotate_v.y = Mathf.Clamp(rotate_v.y, -20f, 20f);
 
         player.transform.localRotation = Quaternion.Slerp(
             player.transform.localRotation,
@@ -348,82 +348,107 @@ public class PlayerController : MonoBehaviour
         getMovement();
         getRotation();
 
+        // flashlight ON/OFF
+        HandleFlashlight();
+
+        // then rotation logic
+        // only handle rotation if flashlight is ON
+        if (flashlight_l.enabled && getAttack())
+            HandleFlashlightRotation();
+
+        // then reload
+        HandleFlashlightReload();
+
         if (getInteract())
             applyInteract();
 
-        // FLASHLIGHT (Attack)
-        if (getAttack())
-        {
-            // If player has 
-            // -battery equipped
-            // -has battery life 
-            // -is not dead
-            // then turn on flashlight
-            Battery currentBattery = playerCharacter.getBattery();
-            if (currentBattery != null && currentBattery.getBatteryLife() > 0 && !isDead)
-            {
-                timer += Time.deltaTime;
-                if (timer >= 0.1f)
-                {
-                    flashlight_l.enabled = true;
-                    currentBattery.decrementTime();
-                    if (timer >= 0.2f)
-                    {
-                        timer = 0;
-                    }
-                }
-                else
-                {
-                    flashlight_l.enabled = false;
-                }
-            }
-            else if (currentBattery != null && !currentBattery.getIsLowBattery())
-            {
-                if (!flashlight_l.enabled)
-                    audioSource.PlayOneShot(flashlightClickSound);
+    }
 
-                flashlight_l.enabled = true;
-                currentBattery.decrementTime();
-            }
-            else
-            {
-                flashlight_l.enabled = false;
-            }
-        }
-        else
-        {
-            if (flashlight_l.enabled)
-                audioSource.PlayOneShot(flashlightClickSound);
+    private void HandleFlashlightRotation()
+    {
+        bool holding = getHold();
 
-            flashlight_l.enabled = false;
-        }
-
-
-        if (getHold() && !holdToggle)
+        // FIRST TIME PRESS — store current flashlight rotation
+        if (holding && !holdToggle)
         {
             flashlight_q = flashlight.transform.rotation;
             holdToggle = true;
         }
-
-        else if (getHold() && holdToggle)
+        // CONTINUOUS HOLD — freeze rotation exactly
+        else if (holding && holdToggle)
         {
             flashlight.transform.rotation = flashlight_q;
         }
-        else
+        // RELEASE HOLD — snap back to camera instantly + reset
+        else if (!holding && holdToggle)
         {
-            flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f, 270f, 0f);
-
-            holdToggle = false;
+            Quaternion target = Quaternion.Euler(0, 280f, 0);
+            flashlight.transform.localRotation = Quaternion.Slerp(
+            flashlight.transform.localRotation,
+            target,
+            Time.deltaTime * 8f
+    );
         }
+    }
 
+    private void HandleFlashlightReload()
+    {
+        Battery currentBattery = playerCharacter.getBattery();
+        if (currentBattery == null) return;
 
-        // RELOAD
         if (getReload())
         {
             audioSource.PlayOneShot(reloadSound, 0.8f);
             playerCharacter.reloadFlashlight();
         }
     }
+
+
+
+    private void HandleFlashlight()
+    {
+        // If player has 
+        // -battery equipped
+        // -has battery life 
+        // -is not dead
+        // then turn on flashlight
+        Battery currentBattery = playerCharacter.getBattery();
+        bool attackInput = getAttack();   // true while holding flashlight button
+
+        // TURN FLASHLIGHT ON
+        if (attackInput && !wasFlashlightOn)
+        {
+            if (currentBattery != null && currentBattery.getBatteryLife() > 0 && !isDead)
+            {
+                audioSource.PlayOneShot(flashlightClickSound);
+                flashlight_l.enabled = true;
+            }
+        }
+
+        // TURN FLASHLIGHT OFF
+        if (!attackInput && wasFlashlightOn)
+        {
+            audioSource.PlayOneShot(flashlightClickSound);
+            flashlight_l.enabled = false;
+        }
+
+        // BATTERY DRAIN
+        if (flashlight_l.enabled && currentBattery != null && !isDead)
+        {
+            currentBattery.decrementTime();
+        }
+
+        // Auto shutdown when battery dies
+        if (flashlight_l.enabled && currentBattery != null && currentBattery.getBatteryLife() <= 0)
+        {
+            flashlight_l.enabled = false;
+            audioSource.PlayOneShot(flashlightClickSound);
+        }
+
+        wasFlashlightOn = attackInput;
+    }
+
+
 
     private void getMovement()
     {
@@ -457,6 +482,10 @@ public class PlayerController : MonoBehaviour
     public void killPlayer()
     {
         isDead = true;
+        // Freeze motion IMMEDIATELY
+        player_rb.isKinematic = true;
+        player_rb.linearVelocity = Vector3.zero;
+        player_rb.angularVelocity = Vector3.zero;
     }
 
     public bool getIsDead()

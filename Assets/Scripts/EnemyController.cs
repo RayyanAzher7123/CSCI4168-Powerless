@@ -35,7 +35,7 @@ public class EnemyController : MonoBehaviour
     private float footstepTimer = 0f;
 
 
-    [SerializeField] private AudioSource ambientSource;
+    // [SerializeField] private AudioSource ambientSource;
     [SerializeField] private AudioClip ambientClip;
 
     [SerializeField] private AudioClip growlClip;
@@ -82,8 +82,6 @@ public class EnemyController : MonoBehaviour
     {
         state.Do();
         HandleFootsteps();
-        HandleAmbient();
-        HandleGrowls();
     }
 
     void FixedUpdate()
@@ -91,11 +89,17 @@ public class EnemyController : MonoBehaviour
         state.FixedDo();
         selectState();
         Debug.Log("Current Enemy State: " + state.GetType().Name);
-        Debug.Log("Current Animation Clip: " + enemyAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
+        var clips = enemyAnimator.GetCurrentAnimatorClipInfo(0);
+        if (clips.Length > 0)
+            Debug.Log("Current Animation Clip: " + clips[0].clip.name);
+
     }
 
     private void selectState()
     {
+        // Prevent ANY changes while we are inkill state
+        if (state == kill_es)
+            return;
         switch (state)
         {
             case idle_enemyState:
@@ -251,18 +255,6 @@ public class EnemyController : MonoBehaviour
         currentIdlePoint_v3 = idlePoints_v3[0];
     }
 
-    // public void activateIdleModel()
-    // {
-    //     idle_go.SetActive(true);
-    //     active_go.SetActive(false);
-    // }
-
-    // public void activateActiveModel()
-    // {
-    //     idle_go.SetActive(false);
-    //     active_go.SetActive(true);
-    // }
-
     public Animator getEnemyAnimator()
     {
         return enemyAnimator;
@@ -316,45 +308,19 @@ public class EnemyController : MonoBehaviour
         audioSource.PlayOneShot(attackClip);
     }
 
-    private void HandleAmbient()
-    {
-        if (!ambientSource.isPlaying)
-        {
-            ambientSource.clip = ambientClip;
-            ambientSource.loop = true;
-            //ambientSource.Play();
-        }
-        if (!ambientSource.isPlaying)
-        {
-            ambientSource.clip = ambientClip;
-            ambientSource.loop = true;
-            //ambientSource.Play();
-        }
-    }
-
-    private void HandleGrowls()
-    {
-        growlTimer -= Time.deltaTime;
-        if (growlTimer <= 0f)
-        {
-            audioSource.PlayOneShot(growlClip);
-            growlTimer = Random.Range(growlMinDelay, growlMaxDelay);
-        }
-    }
 
     public void PlayFinalAttackAndDie()
     {
-        StartCoroutine(FinalAttackSequence());
-    }
-
-    private IEnumerator FinalAttackSequence()
-    {
-
-        audioSource.PlayOneShot(finalAttackClip);
-        yield return new WaitForSeconds(0.7f);
+        Debug.Log("Loading DeathScene");
         UnityEngine.SceneManagement.SceneManager.LoadScene("DeathScene");
-
     }
+
+    // private IEnumerator FinalAttackSequence()
+    // {
+    //     audioSource.PlayOneShot(finalAttackClip);
+    //     UnityEngine.SceneManagement.SceneManager.LoadScene("DeathScene");
+    //     yield return null;
+    // }
 
 
 }
