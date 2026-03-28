@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject camera_go;
     [SerializeField] private GameObject flashlight;
+    [SerializeField] private TMPro.TextMeshProUGUI interactText;
 
     [Header("Input Actions")]
     [SerializeField] private InputActionReference move_ia;
@@ -22,6 +23,9 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float walkSpeed;
     [SerializeField] private float crouchSpeed;
+    [SerializeField] private float standingCameraY = 0.7f;
+    [SerializeField] private float crouchingCameraY = 0.3f;
+    [SerializeField] private float cameraSmooth = 8f;
     [SerializeField] private float sprintSpeed;
     [SerializeField] private float sensitivity;
     [SerializeField] private float reachDistance;
@@ -45,17 +49,42 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetRotate_v;
     private Rigidbody player_rb;
     private Camera camera_c;
-    private bool isDead = false;
+    private CapsuleCollider capsule;
+    private float originalHeight;
+    private float crouchHeight;
+    private Vector3 originalCenter;
+    private Vector3 crouchCenter;
+
+    private bool isDead = false; //verify
     private float timer;
     private Quaternion flashlight_q;
     private bool holdToggle;
 
+    // Footstep variables
+    private float walkStepInterval = 0.6f;
+    private float sprintStepInterval = 0.35f;
+    private float footstepTimer = 0f;
+
+
+
+
     void Start()
     {
         playerCharacter = GetComponent<PlayerCharacter>();
-        flashlight_l = flashlight.GetComponentInChildren<Light>();
+        flashlight_l = flashlight.GetComponentInChildren<Light>(); //verify
         player_rb = player.GetComponent<Rigidbody>();
+
         camera_c = player.GetComponentInChildren<Camera>();
+
+        capsule = player.GetComponent<CapsuleCollider>();
+
+        originalHeight = capsule.height;
+        crouchHeight = originalHeight * 0.5f;
+
+        originalCenter = capsule.center;
+        crouchCenter = new Vector3(originalCenter.x, originalCenter.y * 0.5f, originalCenter.z);
+
+        isDead = false;
 
         audioSource = gameObject.AddComponent<AudioSource>();
         timer = 0;
@@ -65,8 +94,9 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         getInputs();
+        UpdateInteractUI(); // Guides player on what they can interact with
 
-        // Reset level when dead
+        // Reset level when dead verify
         //if (isDead)
         //    restartScene();
     }
@@ -82,8 +112,9 @@ public class PlayerController : MonoBehaviour
         // Movement speed selection
         if (getCrouch())
         {
-            player.transform.localScale = new Vector3(1f, 1f, 1f);
+
             applyMovement(crouchSpeed);
+
         }
         else if (getSprint())
         {
@@ -96,19 +127,37 @@ public class PlayerController : MonoBehaviour
             applyMovement(walkSpeed);
         }
 
+
         applyRotation();
+        applyCrouchHeight();
+        applyColliderCrouchHeight();
     }
 
     private void applyMovement(float speed)
     {
         player_rb.AddForce(move_v * speed);
-
         // FOOTSTEP SOUND
         if (move_v.magnitude > 0.1f && player_rb.linearVelocity.magnitude > 0.1f)
         {
-            if (!audioSource.isPlaying)
+            // Decrease timer
+            footstepTimer -= Time.deltaTime;
+
+            // Select interval based on movement (walk / sprint)
+            float interval = getSprint() ? sprintStepInterval : walkStepInterval;
+
+            // Play sound when timer reaches zero
+            if (footstepTimer <= 0f)
+            {
                 audioSource.PlayOneShot(footstepSound, 0.4f);
+                footstepTimer = interval;
+            }
         }
+        else
+        {
+            // Reset timer when player stops
+            footstepTimer = 0f;
+        }
+
     }
 
     private void applyRotation()
@@ -128,56 +177,170 @@ public class PlayerController : MonoBehaviour
             0.2f);
     }
 
+    private void applyCrouchHeight()
+    {
+        Vector3 camPos = camera_go.transform.localPosition;
+        float targetY = getCrouch() ? crouchingCameraY : standingCameraY;
+        camPos.y = Mathf.Lerp(camPos.y, targetY, Time.deltaTime * cameraSmooth);
+        camera_go.transform.localPosition = camPos;
+    }
+
+    private void applyColliderCrouchHeight()
+    {
+        // Adjust collider to pass under obstacles
+        if (getCrouch())
+        {
+            capsule.height = Mathf.Lerp(capsule.height, crouchHeight, Time.deltaTime * 12f);
+            capsule.center = Vector3.Lerp(capsule.center, crouchCenter, Time.deltaTime * 12f);
+            return;
+        }
+
+        if (!getCrouch() && canStandUp())
+        {
+            capsule.height = Mathf.Lerp(capsule.height, originalHeight, Time.deltaTime * 12f);
+            capsule.center = Vector3.Lerp(capsule.center, originalCenter, Time.deltaTime * 12f);
+        }
+    }
+
+    private bool canStandUp()
+    {
+        return !Physics.Raycast(player.transform.position, Vector3.up, originalHeight * 0.6f);
+    }
+
+
+
     private void applyInteract()
     {
-        
-        if (Physics.Raycast(camera_go.transform.position, camera_go.transform.forward, out RaycastHit hit, reachDistance))
+        GameObject target = FindBestInteractable();
+
+        if (target == null)
+            return;
+
+        Debug.Log("Interacting with: " + target.name);
+
+        string tag = target.tag;
+
+        if (tag == "Key")
         {
-            Debug.Log(hit.transform.name);
-            // KEY PICKUP
-            if (hit.transform.CompareTag("Key"))
+            audioSource.PlayOneShot(keyPickupSound);
+            playerCharacter.addKey();
+            Destroy(target);
+        }
+        else if (tag == "Battery")
+        {
+            audioSource.PlayOneShot(batteryPickupSound);
+            playerCharacter.addBattery();
+            Destroy(target);
+        }
+        else if (tag == "Gear")
+        {
+            audioSource.PlayOneShot(gearPickupSound);
+            playerCharacter.addGear();
+            Destroy(target);
+        }
+        else if (tag == "Door")
+        {
+            if (playerCharacter.getKeys() > 0)
             {
-                audioSource.PlayOneShot(keyPickupSound);
-                playerCharacter.addKey();
-                Destroy(hit.transform.gameObject);
-            }
-
-            // BATTERY PICKUP
-            if (hit.transform.CompareTag("Battery"))
-            {
-                audioSource.PlayOneShot(batteryPickupSound);
-                playerCharacter.addBattery();
-                Destroy(hit.transform.gameObject);
-            }
-
-            // GEAR PICKUP
-            if (hit.transform.CompareTag("Gear"))
-            {
-                audioSource.PlayOneShot(gearPickupSound);
-                playerCharacter.addGear();
-                Destroy(hit.transform.gameObject);
-            }
-
-            // DOOR OPEN
-            if (hit.transform.CompareTag("Door"))
-            {
-                if (playerCharacter.getKeys() > 0)
-                {
-                    audioSource.PlayOneShot(doorOpenSound);
-                    Destroy(hit.transform.gameObject);
-                    playerCharacter.removeKey();
-                }
-            }
-
-            // GENERATOR (Load next scene)
-            if (hit.transform.CompareTag("Generator"))
-            {
-                if (playerCharacter.getGear() > 0)
-                {
-                    loadNextScene();
-                }
+                audioSource.PlayOneShot(doorOpenSound);
+                Destroy(target);
+                playerCharacter.removeKey();
             }
         }
+        else if (tag == "Generator")
+        {
+            if (playerCharacter.getGear() > 0)
+                loadNextScene();
+        }
+    }
+
+    private bool IsInteractable(GameObject go)
+    {
+        string tag = go.tag;
+        return tag == "Key" || tag == "Battery" || tag == "Gear" || tag == "Door" || tag == "Generator";
+    }
+
+    private GameObject FindBestInteractable()
+    {
+        Vector3 origin = camera_go.transform.position;
+        float radius = reachDistance;
+
+        Collider[] hits = Physics.OverlapSphere(origin, radius);
+
+        GameObject best = null;
+        float bestScore = Mathf.Infinity;
+
+        foreach (Collider col in hits)
+        {
+            if (!IsInteractable(col.gameObject))
+                continue;
+
+            // Use center of collider (works even with MeshColliders)
+            Vector3 center = col.bounds.center;
+
+            // Convert world to screen space
+            Vector3 screenPos = camera_c.WorldToScreenPoint(center);
+
+            // Ignore objects behind camera
+            if (screenPos.z < 0f)
+                continue;
+
+            // Distance from screen center (smaller = more centered)
+            float dx = screenPos.x - (Screen.width * 0.5f);
+            float dy = screenPos.y - (Screen.height * 0.5f);
+            float score = dx * dx + dy * dy;
+
+            if (score < bestScore)
+            {
+                bestScore = score;
+                best = col.gameObject;
+            }
+        }
+
+        return best;
+    }
+
+    private void UpdateInteractText(GameObject target)
+    {
+        if (target == null)
+        {
+            interactText.text = "";
+            return;
+        }
+
+        string tag = target.tag;
+
+        switch (tag)
+        {
+            case "Key":
+                interactText.text = "Press E to pick up Key";
+                break;
+
+            case "Battery":
+                interactText.text = "Press E to pick up Battery";
+                break;
+
+            case "Gear":
+                interactText.text = "Press E to pick up Gear";
+                break;
+
+            case "Door":
+                interactText.text = "Press E to open Door";
+                break;
+
+            case "Generator":
+                interactText.text = "Press E to start Generator";
+                break;
+
+            default:
+                interactText.text = "";
+                break;
+        }
+    }
+    private void UpdateInteractUI()
+    {
+        GameObject target = FindBestInteractable();
+        UpdateInteractText(target);
     }
 
     private void getInputs()
@@ -191,9 +354,13 @@ public class PlayerController : MonoBehaviour
         // FLASHLIGHT (Attack)
         if (getAttack())
         {
+            // If player has 
+            // -battery equipped
+            // -has battery life 
+            // -is not dead
+            // then turn on flashlight
             Battery currentBattery = playerCharacter.getBattery();
-
-            if (currentBattery != null && currentBattery.getIsLowBattery() && currentBattery.getBatteryLife() > 0)
+            if (currentBattery != null && currentBattery.getBatteryLife() > 0 && !isDead)
             {
                 timer += Time.deltaTime;
                 if (timer >= 0.1f)
@@ -230,23 +397,25 @@ public class PlayerController : MonoBehaviour
 
             flashlight_l.enabled = false;
         }
-        
+
+
         if (getHold() && !holdToggle)
         {
             flashlight_q = flashlight.transform.rotation;
-            
             holdToggle = true;
-        } 
+        }
+
         else if (getHold() && holdToggle)
         {
             flashlight.transform.rotation = flashlight_q;
         }
         else
         {
-            flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f , 270f, 0f);
-            
+            flashlight.transform.rotation = camera_go.transform.rotation * Quaternion.Euler(0f, 270f, 0f);
+
             holdToggle = false;
         }
+
 
         // RELOAD
         if (getReload())
@@ -288,6 +457,16 @@ public class PlayerController : MonoBehaviour
     public void killPlayer()
     {
         isDead = true;
+    }
+
+    public bool getIsDead()
+    {
+        return isDead;
+    }
+
+    public GameObject getPlayerGameObject()
+    {
+        return player;
     }
 
     private void loadNextScene()

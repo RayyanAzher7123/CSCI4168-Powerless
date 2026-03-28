@@ -3,7 +3,7 @@ using UnityEngine;
 public class frozen_enemyState : GenericState
 {
     private EnemyController enemyController;
-    
+
     public override void Setup(GameObject parent)
     {
         enemyController = parent.GetComponentInChildren<EnemyController>();
@@ -12,21 +12,27 @@ public class frozen_enemyState : GenericState
     public override void Enter()
     {
         enemyController.stopEnemyMovement();
-        enemyController.PlayFreezeSound(); 
+        Animator animator = enemyController.getEnemyAnimator();
+        animator.SetBool("isFrozen", true);
+        animator.SetBool("isAttacking", false);
+        animator.SetBool("isReturning", false);
+        animator.SetBool("isKilling", false);
+
+        enemyController.PlayFreezeSound();
     }
 
     public override void Do()
     {
-        
+
     }
 
     public override void FixedDo()
     {
-        
+
     }
 
     public override void Exit()
     {
-        
+
     }
 }

@@ -8,19 +8,18 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject enemy_go;
     [SerializeField] private GameObject player_go;
     [SerializeField] private GameObject flashlight_go;
-    [SerializeField] private GameObject idle_go;
     [SerializeField] private GameObject idlePoints_go;
-    [SerializeField] private GameObject active_go;
+    [SerializeField] private Animator enemyAnimator;
     [SerializeField] private GameObject playerCamera_go;
 
     [SerializeField] private idle_enemyState idle_es;
     [SerializeField] private attacking_enemyState attacking_es;
     [SerializeField] private frozen_enemyState frozen_es;
     [SerializeField] private returning_enemyState returning_es;
-    [SerializeField] private kill_enemyState  kill_es;
+    [SerializeField] private kill_enemyState kill_es;
     [SerializeField] private GenericState state;
     private GenericState nextState;
-    
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float agroDistance;
     [SerializeField] private float attackDistance;
@@ -57,7 +56,7 @@ public class EnemyController : MonoBehaviour
     private Light flashlight;
     private NavMeshAgent enemy_nma;
     private Collider enemy_c;
-    
+
     void Start()
     {
         idle_es.Setup(enemy_go);
@@ -65,17 +64,17 @@ public class EnemyController : MonoBehaviour
         frozen_es.Setup(enemy_go);
         returning_es.Setup(enemy_go);
         kill_es.Setup(enemy_go);
-        state =  idle_es;
+        state = idle_es;
         nextState = idle_es;
 
         setupIdlePoints();
-        
-        flashlight = flashlight_go.GetComponentInChildren<Light>();
+
+        flashlight = flashlight_go.GetComponentInChildren<Light>();//verify this works
         flashlightFreezeAngle = flashlight.spotAngle / 2f + 3f;
 
         enemy_nma = enemy_go.GetComponent<NavMeshAgent>();
         enemy_c = enemy_go.GetComponent<CapsuleCollider>();
-        
+
         InvokeRepeating("checkPlayer", 0, 1f);
     }
 
@@ -91,6 +90,8 @@ public class EnemyController : MonoBehaviour
     {
         state.FixedDo();
         selectState();
+        Debug.Log("Current Enemy State: " + state.GetType().Name);
+        Debug.Log("Current Animation Clip: " + enemyAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
     }
 
     private void selectState()
@@ -101,14 +102,14 @@ public class EnemyController : MonoBehaviour
                 if (inLight())
                 {
                     nextState = frozen_es;
-                } 
+                }
                 else if (canSeePlayer)
                 {
                     nextState = attacking_es;
-                } 
+                }
                 else if (!inIdlePosition())
-                { 
-                    nextState = returning_es; 
+                {
+                    nextState = returning_es;
                 }
                 break;
             case attacking_enemyState:
@@ -119,7 +120,7 @@ public class EnemyController : MonoBehaviour
                 if (inLight())
                 {
                     nextState = frozen_es;
-                } 
+                }
                 else if (!canSeePlayer)
                 {
                     nextState = returning_es;
@@ -131,14 +132,14 @@ public class EnemyController : MonoBehaviour
                     if (canSeePlayer)
                     {
                         nextState = attacking_es;
-                    } 
+                    }
                     else if (!inIdlePosition())
                     {
                         nextState = returning_es;
                     }
                     else
                     {
-                        nextState =  idle_es;
+                        nextState = idle_es;
                     }
                 }
                 break;
@@ -146,14 +147,14 @@ public class EnemyController : MonoBehaviour
                 if (inLight())
                 {
                     nextState = frozen_es;
-                } 
+                }
                 else if (canSeePlayer)
                 {
                     nextState = attacking_es;
-                } 
+                }
                 else if (inIdlePosition())
-                { 
-                    nextState = idle_es; 
+                {
+                    nextState = idle_es;
                 }
                 break;
         }
@@ -172,7 +173,7 @@ public class EnemyController : MonoBehaviour
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < attackDistance;
     }
-    
+
     private bool inIdlePosition()
     {
         return Vector3.Distance(currentIdlePoint_v3, enemy_go.transform.position) < idleDistance;
@@ -200,7 +201,7 @@ public class EnemyController : MonoBehaviour
         //TODO: Ambient light logic
         return false;
     }
-    
+
     private bool inFlashlight()
     {
         return flashlight.isActiveAndEnabled &&
@@ -228,7 +229,7 @@ public class EnemyController : MonoBehaviour
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < flashlightFreezeDistance;
     }
-    
+
     private bool isInAgroRange()
     {
         return Vector3.Distance(player_go.transform.position, enemy_go.transform.position) < agroDistance;
@@ -246,21 +247,27 @@ public class EnemyController : MonoBehaviour
             idlePoints_v3[i] = t.position;
             i++;
         }
-        
-        currentIdlePoint_v3 =  idlePoints_v3[0];
+
+        currentIdlePoint_v3 = idlePoints_v3[0];
     }
-    
-    public void activateIdleModel()
+
+    // public void activateIdleModel()
+    // {
+    //     idle_go.SetActive(true);
+    //     active_go.SetActive(false);
+    // }
+
+    // public void activateActiveModel()
+    // {
+    //     idle_go.SetActive(false);
+    //     active_go.SetActive(true);
+    // }
+
+    public Animator getEnemyAnimator()
     {
-        idle_go.SetActive(true);
-        active_go.SetActive(false);
+        return enemyAnimator;
     }
-    
-    public void activateActiveModel()
-    {
-        idle_go.SetActive(false);
-        active_go.SetActive(true);
-    }
+
 
     public void huntPlayer()
     {
@@ -294,15 +301,15 @@ public class EnemyController : MonoBehaviour
 
     private void HandleFootsteps()
     {
-    if (enemy_nma.velocity.magnitude > 0.1f)
-    {
-        footstepTimer -= Time.deltaTime;
-        if (footstepTimer <= 0f)
+        if (enemy_nma.velocity.magnitude > 0.1f)
         {
-            audioSource.PlayOneShot(footstepClip);
-            footstepTimer = footstepInterval;
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0f)
+            {
+                audioSource.PlayOneShot(footstepClip);
+                footstepTimer = footstepInterval;
+            }
         }
-    }
     }
     public void PlayAttackSound()
     {
@@ -311,22 +318,28 @@ public class EnemyController : MonoBehaviour
 
     private void HandleAmbient()
     {
-    if (!ambientSource.isPlaying)
-    {
-        ambientSource.clip = ambientClip;
-        ambientSource.loop = true;
-        //ambientSource.Play();
-    }
+        if (!ambientSource.isPlaying)
+        {
+            ambientSource.clip = ambientClip;
+            ambientSource.loop = true;
+            //ambientSource.Play();
+        }
+        if (!ambientSource.isPlaying)
+        {
+            ambientSource.clip = ambientClip;
+            ambientSource.loop = true;
+            //ambientSource.Play();
+        }
     }
 
     private void HandleGrowls()
     {
-    growlTimer -= Time.deltaTime;
-    if (growlTimer <= 0f)
-    {
-        audioSource.PlayOneShot(growlClip);
-        growlTimer = Random.Range(growlMinDelay, growlMaxDelay);
-    }
+        growlTimer -= Time.deltaTime;
+        if (growlTimer <= 0f)
+        {
+            audioSource.PlayOneShot(growlClip);
+            growlTimer = Random.Range(growlMinDelay, growlMaxDelay);
+        }
     }
 
     public void PlayFinalAttackAndDie()
@@ -336,9 +349,9 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator FinalAttackSequence()
     {
-    
+
         audioSource.PlayOneShot(finalAttackClip);
-        yield return new WaitForSeconds(0.7f); 
+        yield return new WaitForSeconds(0.7f);
         UnityEngine.SceneManagement.SceneManager.LoadScene("DeathScene");
 
     }
